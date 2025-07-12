@@ -6,11 +6,10 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Settings, Plus, Share } from "lucide-react"
 
 interface Project {
-  id: string
+  project_id: string
   name: string
   description: string
   status: string
-  videosCount: number
 }
 
 interface ProjectHeaderProps {

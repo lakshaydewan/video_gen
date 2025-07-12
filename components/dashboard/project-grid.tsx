@@ -1,11 +1,12 @@
 "use client"
-
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreHorizontal, Calendar, Settings, Trash2, Copy } from "lucide-react"
+import { useProjectStore } from "@/store"
+import { useEffect } from "react"
 
 interface Project {
   project_id: string
@@ -21,6 +22,13 @@ interface ProjectsGridProps {
 }
 
 export function ProjectsGrid({ projects }: ProjectsGridProps) {
+
+  const { setProjects } = useProjectStore();
+   
+  useEffect(() => {
+    setProjects(projects);
+  }, [projects, setProjects])
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":

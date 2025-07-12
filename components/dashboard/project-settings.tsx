@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { AlertTriangle, Trash2 } from "lucide-react"
 
 interface Project {
-  id: string
+  project_id: string
   name: string
   status: string
 }

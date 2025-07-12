@@ -5,17 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Copy, Eye, EyeOff, ExternalLink } from "lucide-react"
+import { Copy, Eye, EyeOff } from "lucide-react"
 import { toast } from "sonner"
 
 interface Project {
-  id: string
+  project_id: string
   name: string
-  accessKey: string
-  apiEndpoint: string
-  webhookUrl: string
-  totalViews: number
-  totalDuration: string
+  project_access_key: string
 }
 
 interface ProjectDetailsProps {
@@ -23,7 +19,7 @@ interface ProjectDetailsProps {
 }
 
 export function ProjectDetails({ project }: ProjectDetailsProps) {
-  const [showAccessKey, setShowAccessKey] = useState(false)
+  const [showproject_access_key, setShowproject_access_key] = useState(false)
 
   const copyToClipboard = (text: string, label: string) => {
     console.log(text)
@@ -39,14 +35,14 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
       <CardContent className="space-y-6">
         {/* Project Stats */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 bg-slate-50 rounded-lg">
+          {/* <div className="text-center p-3 bg-slate-50 rounded-lg">
             <div className="text-2xl font-bold text-slate-900">{project.totalViews}</div>
             <div className="text-sm text-slate-600">Total Views</div>
           </div>
           <div className="text-center p-3 bg-slate-50 rounded-lg">
             <div className="text-2xl font-bold text-slate-900">{project.totalDuration}</div>
             <div className="text-sm text-slate-600">Total Duration</div>
-          </div>
+          </div> */}
         </div>
 
         {/* Access Key */}
@@ -54,15 +50,15 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
           <Label>Access Key</Label>
           <div className="flex items-center space-x-2">
             <Input
-              type={showAccessKey ? "text" : "password"}
-              value={project.accessKey}
+              type={showproject_access_key ? "text" : "password"}
+              value={project.project_access_key}
               readOnly
               className="font-mono text-sm"
             />
-            <Button variant="outline" size="icon" onClick={() => setShowAccessKey(!showAccessKey)}>
-              {showAccessKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <Button variant="outline" size="icon" onClick={() => setShowproject_access_key(!showproject_access_key)}>
+              {showproject_access_key ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </Button>
-            <Button variant="outline" size="icon" onClick={() => copyToClipboard(project.accessKey, "Access key")}>
+            <Button variant="outline" size="icon" onClick={() => copyToClipboard(project.project_access_key, "Access key")}>
               <Copy className="w-4 h-4" />
             </Button>
           </div>
@@ -73,18 +69,18 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
         <div className="space-y-2">
           <Label>API Endpoint</Label>
           <div className="flex items-center space-x-2">
-            <Input value={project.apiEndpoint} readOnly className="font-mono text-sm" />
-            <Button variant="outline" size="icon" onClick={() => copyToClipboard(project.apiEndpoint, "API endpoint")}>
+            {/* <Input value={project.apiEndpoint} readOnly className="font-mono text-sm" /> */}
+            {/* <Button variant="outline" size="icon" onClick={() => copyToClipboard(project.apiEndpoint, "API endpoint")}>
               <Copy className="w-4 h-4" />
             </Button>
             <Button variant="outline" size="icon" onClick={() => window.open(project.apiEndpoint, "_blank")}>
               <ExternalLink className="w-4 h-4" />
-            </Button>
+            </Button> */}
           </div>
         </div>
 
         {/* Webhook URL */}
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label>Webhook URL</Label>
           <div className="flex items-center space-x-2">
             <Input value={project.webhookUrl} readOnly className="font-mono text-sm" />
@@ -93,7 +89,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
             </Button>
           </div>
           <p className="text-xs text-slate-600">Receive notifications when videos are processed.</p>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )

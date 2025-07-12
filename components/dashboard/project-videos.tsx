@@ -68,6 +68,8 @@ export function ProjectVideos({ videos }: ProjectVideosProps) {
               >
                 <div className="relative">
                   <Image
+                    width={1000}
+                    height={1000}
                     src={video.thumbnail || "/placeholder.svg"}
                     alt={video.title}
                     className="w-20 h-12 object-cover rounded bg-slate-100"

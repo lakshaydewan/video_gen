@@ -123,6 +123,8 @@ export function TestimonialsSection() {
 
               <div className="flex items-center">
                 <Image
+                  width={1000}
+                  height={1000}
                   src={testimonial.avatar || "/placeholder.svg"}
                   alt={testimonial.name}
                   className="w-12 h-12 rounded-full mr-4 bg-gradient-to-br from-purple-200 to-blue-200"

@@ -14,8 +14,6 @@ export default async function DashboardPage() {
 
   const projects = await getProjects();
 
-  console.log("projects", projects)
-
   return (
     <div className="min-h-screen bg-slate-50">
       <DashboardHeader />
