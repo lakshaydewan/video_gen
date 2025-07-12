@@ -1,16 +1,30 @@
-import React from 'react'
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { ProjectsGrid } from "@/components/dashboard/project-grid"
+import { DashboardStats } from "@/components/dashboard/dashboard-stats"
+import { getProjects } from "@/actions/user-actions"
 
-const Page = async () => {
+export default async function DashboardPage() {
+  const { userId } = await auth()
 
-    const { getToken } = await auth();
-    console.log('Token:', await getToken());
+  if (!userId) {
+    redirect("/sign-in")
+  }
 
-    return (
-        <div>
+  const projects = await getProjects();
 
+  console.log("projects", projects)
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <DashboardHeader />
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          <DashboardStats />
+          <ProjectsGrid projects={projects} />
         </div>
-    )
+      </main>
+    </div>
+  )
 }
-
-export default Page
