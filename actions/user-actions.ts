@@ -4,7 +4,7 @@ export const getProjects = async () => {
     const { getToken } = await auth()
     const token = await getToken()
 
-    const res = await fetch("http://localhost:8000/project", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/project`, { 
         method: "GET",
         headers: {
             Authorization: `Bearer ${token}`,

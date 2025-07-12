@@ -35,11 +35,11 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
         e.preventDefault()
         setIsLoading(true)
 
-        // Simulate API call    
+        // Simulate API call  
         const token = await getToken()
 
         try {
-            const res = await fetch("http://localhost:8000/project", {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/project`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
