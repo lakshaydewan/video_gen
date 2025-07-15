@@ -53,15 +53,14 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
 
             const data = await res.json()
 
-            console.log("data from API", data.project)
-
-            router.push(`/dashboard/${data.project.project_id}`)
+            console.log("data from API project", data.project)
+            router.refresh()
+            // router.push(`/dashboard/${data.project.project_id}`)
         } catch (error) {
             console.error("Error creating project:", error)
         } finally {
             setIsLoading(false)
             onOpenChange(false)
-            // Reset form
             setFormData({ name: "", description: "" })
         }
     }
