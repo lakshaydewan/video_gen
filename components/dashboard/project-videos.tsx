@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Play, Plus, Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useProjectStore } from "@/store"
 
 interface Video {
@@ -22,10 +22,99 @@ interface ProjectVideosProps {
 
 export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
 
-  const [loading, setLoading] = useState(false)
-  const [videoUrl, setVideoUrl] = useState<string | null>(null)
   const projects = useProjectStore.getState().projects
   const currentProject = projects.find((p) => p.project_id === projectId)
+
+
+  const [loading, setLoading] = useState(false)
+  const [videoUrl, setVideoUrl] = useState<string | null>(null)
+  const [taskId, setTaskId] = useState<string | null>(null)
+  const [status, setStatus] = useState<string | null>(null)
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+  if (!downloadUrl) return
+
+  const controller = new AbortController()
+
+  const fetchVideo = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/download`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${currentProject?.project_access_key}`,
+        },
+        signal: controller.signal,
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch video")
+      }
+
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      setVideoUrl(url)
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("Video fetch error:", err.message)
+        return
+      }
+    }
+  }
+
+  fetchVideo()
+
+  return () => {
+    controller.abort()
+  }
+}, [downloadUrl, currentProject])
+
+
+  useEffect(() => {
+    if (!taskId) return
+
+    intervalRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/status/${taskId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentProject?.project_access_key}`,
+          },
+        })
+        const data = await res.json()
+        console.log("STATUS FROM API", data)
+        setStatus(data.status)
+
+        // check if status is done
+        if (data.status === "done") {
+          setStatus("done")
+          setDownloadUrl(data.video_url)
+          setLoading(false)
+
+          if (intervalRef.current) clearInterval(intervalRef.current)
+          return
+        }
+
+        if (data.status === "failed") {
+          setStatus("failed")
+          setLoading(false)
+          if (intervalRef.current) clearInterval(intervalRef.current)
+        }
+
+      } catch (error) {
+        console.error("Polling error:", error)
+      }
+    }, 1000)
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [taskId])
+
 
   return (
     <Card>
@@ -51,13 +140,13 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
                   return
                 }
 
-                const blob = await res.blob()
-                const url = URL.createObjectURL(blob)
-                setVideoUrl(url)
+                
+                const data = await res.json()
+                setTaskId(data.task_id)
+                console.log("DATA FROM API", data)
               } catch (error) {
                 console.error("Error creating video:", error)
               } finally {
-                setLoading(false)
               }
             }}
           >
@@ -85,7 +174,7 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
               {
                 loading ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <Loader2 className="w-6 h-6 animate-spin" /> <span>{status ? status : ""}</span>
                   </div>
                 ) : videoUrl ? (
                   <div className="flex justify-center">
