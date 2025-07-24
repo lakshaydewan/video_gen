@@ -41,7 +41,7 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
 
   const fetchVideo = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/download`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/download/${downloadUrl}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
         // check if status is done
         if (data.status === "done") {
           setStatus("done")
-          setDownloadUrl(data.video_url)
+          setDownloadUrl(data.task_id)
           setLoading(false)
 
           if (intervalRef.current) clearInterval(intervalRef.current)
@@ -132,6 +132,9 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${currentProject?.project_access_key}`,
                   },
+                  body: JSON.stringify({
+                    text: "TESTING"
+                  }),
                 })
 
                 if (!res.ok) {
@@ -139,7 +142,6 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
                   console.error("Error:", err.details)
                   return
                 }
-
                 
                 const data = await res.json()
                 setTaskId(data.task_id)
