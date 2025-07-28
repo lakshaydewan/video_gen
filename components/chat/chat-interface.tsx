@@ -1,15 +1,42 @@
 "use client"
 
 import { useState } from "react"
-import { Share, User, ClapperboardIcon as Whiteboard, BarChart3, Brain, Zap } from "lucide-react"
+import {
+  Share,
+  User,
+  ClapperboardIcon as Whiteboard,
+  BarChart3,
+  Brain,
+  Zap,
+  FileText,
+  Download,
+  Eye,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { MessageInput } from "../chat/message-input"
+import { MessageInput } from "../../components/chat/message-input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
-// Placeholder messages data
-const initialMessages = [
+// Updated message interface to include attachments
+interface MessageAttachment {
+  id: string
+  name: string
+  type: string
+  size: number
+  url: string
+}
+
+interface Message {
+  id: number
+  sender: "user" | "ai"
+  text: string
+  timestamp: Date
+  attachments?: MessageAttachment[]
+}
+
+// Placeholder messages data with attachments
+const initialMessages: Message[] = [
   {
     id: 1,
     sender: "ai",
@@ -19,36 +46,124 @@ const initialMessages = [
   {
     id: 2,
     sender: "user",
-    text: "Can you explain how React hooks work?",
+    text: "Can you explain how React hooks work? I've attached some documentation I found.",
     timestamp: new Date(Date.now() - 240000), // 4 minutes ago
+    attachments: [
+      {
+        id: "1",
+        name: "react-hooks-guide.pdf",
+        type: "application/pdf",
+        size: 2048576,
+        url: "/placeholder.svg?height=200&width=150&text=PDF",
+      },
+      {
+        id: "2",
+        name: "component-diagram.png",
+        type: "image/png",
+        size: 1024000,
+        url: "/placeholder.svg?height=200&width=300&text=React+Component+Diagram",
+      },
+    ],
   },
   {
     id: 3,
     sender: "ai",
-    text: "Great question! Think of React hooks as special functions that let you 'hook into' React's features. The most common one is useState, which is like having a memory box that React watches. When you change what's in the box, React automatically updates your webpage to show the new content. It's like having a smart assistant that redraws your page whenever something important changes!",
+    text: "Great question! I can see you've shared some helpful resources. Think of React hooks as special functions that let you 'hook into' React's features. The most common one is useState, which is like having a memory box that React watches. When you change what's in the box, React automatically updates your webpage to show the new content.",
     timestamp: new Date(Date.now() - 180000), // 3 minutes ago
   },
 ]
 
+// File attachment component
+function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const isImage = attachment.type.startsWith("image/")
+  const isPDF = attachment.type === "application/pdf"
+
+  if (isImage) {
+    return (
+      <div className="relative group rounded-lg overflow-hidden border bg-muted/50 max-w-sm">
+        <img
+          src={attachment.url || "/placeholder.svg"}
+          alt={attachment.name}
+          className="w-full h-auto max-h-64 object-cover"
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <Button variant="secondary" size="sm" className="gap-2">
+            <Eye className="h-4 w-4" />
+            View
+          </Button>
+        </div>
+        <div className="p-2 bg-background/95 backdrop-blur">
+          <p className="text-xs font-medium truncate">{attachment.name}</p>
+          <p className="text-xs text-muted-foreground">{formatFileSize(attachment.size)}</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/50 max-w-sm">
+      <div className="flex-shrink-0">
+        {isPDF ? (
+          <div className="w-10 h-10 rounded bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+            <FileText className="h-5 w-5 text-red-600 dark:text-red-400" />
+          </div>
+        ) : (
+          <div className="w-10 h-10 rounded bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+            <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate">{attachment.name}</p>
+        <p className="text-xs text-muted-foreground">{formatFileSize(attachment.size)}</p>
+      </div>
+      <Button variant="ghost" size="sm" className="flex-shrink-0 h-8 w-8 p-0">
+        <Download className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
+
 export function ChatInterface() {
-  const [messages, setMessages] = useState(initialMessages)
+  const [messages, setMessages] = useState<Message[]>(initialMessages)
 
   const handleSendMessage = (messageText: string, attachedFiles: File[]) => {
-    const newMessage = {
+    // Convert files to attachments
+    const attachments: MessageAttachment[] = attachedFiles.map((file, index) => ({
+      id: `${Date.now()}-${index}`,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      url: URL.createObjectURL(file), // Create object URL for preview
+    }))
+
+    const newMessage: Message = {
       id: messages.length + 1,
-      sender: "user" as const,
+      sender: "user",
       text: messageText,
       timestamp: new Date(),
+      attachments: attachments.length > 0 ? attachments : undefined,
     }
 
     setMessages((prev) => [...prev, newMessage])
 
     // Simulate AI response
     setTimeout(() => {
-      const aiResponse = {
+      const aiResponse: Message = {
         id: messages.length + 2,
-        sender: "ai" as const,
-        text: "I understand your question. Let me help you with that...",
+        sender: "ai",
+        text:
+          attachments.length > 0
+            ? `I can see you've shared ${attachments.length} file(s). Let me analyze them and help you with your question...`
+            : "I understand your question. Let me help you with that...",
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, aiResponse])
@@ -104,6 +219,7 @@ export function ChatInterface() {
       </header>
 
       {/* Messages */}
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
@@ -132,6 +248,16 @@ export function ChatInterface() {
                 >
                   <p className="text-sm leading-relaxed">{message.text}</p>
                 </div>
+
+                {/* File attachments */}
+                {message.attachments && message.attachments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    {message.attachments.map((attachment) => (
+                      <FileAttachment key={attachment.id} attachment={attachment} />
+                    ))}
+                  </div>
+                )}
+
                 <p className="text-xs text-muted-foreground mt-1 px-1">{formatTime(message.timestamp)}</p>
               </div>
 
