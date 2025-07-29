@@ -113,7 +113,7 @@ export function ProjectVideos({ videos, projectId }: ProjectVideosProps) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [taskId])
+  }, [taskId, currentProject?.project_access_key])
 
 
   return (

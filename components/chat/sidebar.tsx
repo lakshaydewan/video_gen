@@ -1,5 +1,5 @@
 "use client"
-import { Plus, MessageSquare, User, BookOpen, Grid3X3 } from "lucide-react"
+import { Plus, MessageSquare, User } from "lucide-react"
 import {
   Sidebar as SidebarPrimitive,
   SidebarContent,
@@ -25,18 +25,6 @@ const chatHistory = [
   { id: 5, title: "Node.js Best Practices", timestamp: "2 weeks ago" },
 ]
 
-const journals = [
-  { id: 1, title: "Daily Learning Notes" },
-  { id: 2, title: "Project Ideas" },
-  { id: 3, title: "Code Snippets" },
-]
-
-const spaces = [
-  { id: 1, title: "Frontend Development" },
-  { id: 2, title: "Data Science" },
-  { id: 3, title: "System Design" },
-]
-
 export function Sidebar() {
   const handleNewChat = () => {
     console.log("New chat started")
@@ -46,13 +34,13 @@ export function Sidebar() {
     console.log(`Loading chat with ID: ${id}`)
   }
 
-  const handleAddJournal = () => {
-    console.log("Adding new journal")
-  }
+  // const handleAddJournal = () => {
+  //   console.log("Adding new journal")
+  // }
 
-  const handleAddSpace = () => {
-    console.log("Adding new space")
-  }
+  // const handleAddSpace = () => {
+  //   console.log("Adding new space")
+  // }
 
   return (
     <SidebarPrimitive className="border-r">

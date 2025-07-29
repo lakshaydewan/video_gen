@@ -50,7 +50,7 @@ export function MessageInput({ onSendMessage }: MessageInputProps) {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
-      handleSubmit(event as any)
+      handleSubmit(event as React.FormEvent)
     }
   }
 

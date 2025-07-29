@@ -4,10 +4,6 @@ import { useState } from "react"
 import {
   Share,
   User,
-  ClapperboardIcon as Whiteboard,
-  BarChart3,
-  Brain,
-  Zap,
   FileText,
   Download,
   Eye,
@@ -17,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { MessageInput } from "../../components/chat/message-input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import Image from "next/image"
 
 // Updated message interface to include attachments
 interface MessageAttachment {
@@ -89,7 +86,9 @@ function FileAttachment({ attachment }: { attachment: MessageAttachment }) {
   if (isImage) {
     return (
       <div className="relative group rounded-lg overflow-hidden border bg-muted/50 max-w-sm">
-        <img
+        <Image
+          width={800}
+          height={800}
           src={attachment.url || "/placeholder.svg"}
           alt={attachment.name}
           className="w-full h-auto max-h-64 object-cover"
@@ -224,7 +223,7 @@ export function ChatInterface() {
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-2">What's on your mind, ash?</h2>
+              <h2 className="text-2xl font-semibold mb-2">What&apos;s on your mind, ash?</h2>
               <p className="text-muted-foreground">Start a conversation with your AI learning assistant</p>
             </div>
           </div>
